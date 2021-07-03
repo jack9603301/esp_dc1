@@ -47,6 +47,7 @@ private:
     void energyShow(bool isMqtt);
 
     char powerStatTopic[100];
+    char powerStatReportTopic[100];
     char energyTeleTopic[100];
 
     uint8_t btnGPIO[4] = {KEY_0_PIN, KEY_1_PIN, KEY_2_PIN, KEY_3_PIN};

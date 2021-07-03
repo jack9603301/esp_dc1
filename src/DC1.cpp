@@ -33,6 +33,7 @@ void DC1::init()
     logoLed();
 
     strcpy(powerStatTopic, Mqtt::getStatTopic(F("power1")).c_str());
+    strcpy(powerStatReportTopic, Mqtt::getStatTopic(F("power1_report")).c_str());
     strcpy(energyTeleTopic, Mqtt::getTeleTopic(F("energy")).c_str());
 
     channels = 4;
@@ -184,10 +185,12 @@ void DC1::mqttDiscovery(bool isEnable)
         {
             cmndTopic[strlen(cmndTopic) - 1] = ch + 49;           // 48 + 1 + ch
             powerStatTopic[strlen(powerStatTopic) - 1] = ch + 49; // 48 + 1 + ch
+            powerStatReportTopic[strlen(powerStatTopic) - 1] = ch + 49;
             sprintf(message,
                     PSTR("{\"name\":\"%s_%d\","
                          "\"cmd_t\":\"%s\","
                          "\"stat_t\":\"%s\","
+                         "\"stat_r\":\"%s\","
                          "\"pl_off\":\"off\","
                          "\"pl_on\":\"on\","
                          "\"avty_t\":\"%s\","
@@ -196,6 +199,7 @@ void DC1::mqttDiscovery(bool isEnable)
                     UID, (ch + 1),
                     cmndTopic,
                     powerStatTopic,
+                    powerStatReportTopic
                     availability.c_str());
             Mqtt::publish(topic, message, true);
             //Debug::AddInfo(PSTR("discovery: %s - %s"), topic, message);
@@ -940,7 +944,7 @@ void DC1::reportPower()
 {
     for (size_t ch = 0; ch < channels; ch++)
     {
-        powerStatTopic[strlen(powerStatTopic) - 1] = ch + 49; // 48 + 1 + ch
-        Mqtt::publish(powerStatTopic, bitRead(lastState, ch) ? "on" : "off", globalConfig.mqtt.retain);
+        powerStatReportTopic[strlen(powerStatTopic) - 1] = ch + 49; // 48 + 1 + ch
+        Mqtt::publish(powerStatReportTopic, bitRead(lastState, ch) ? "on" : "off", globalConfig.mqtt.retain);
     }
 }
